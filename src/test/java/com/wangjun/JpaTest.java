@@ -49,6 +49,8 @@ public class JpaTest {
 
     /**
      * 根据id查询客户 find
+     *      1.查询的对象就是当前客户对象本身
+     *      2.在调用find方法的时候，就会发送sql语句查询数据库
      */
     @Test
     public void testFind(){
@@ -59,6 +61,28 @@ public class JpaTest {
         transaction.begin();
         //完成业务操作
         Customer customer = em.find(Customer.class, 1L);
+        System.out.println(customer);
+        //提交事务
+        transaction.commit();
+        //释放资源
+        em.close();
+    }
+
+    /**
+     * 根据id查询客户 Reference  懒加载
+     *      1.获取的对象是一个动态代理对象
+     *      2.调用getReference方法不会立即发送sql语句查询数据库
+     *      *当调用查询结果对象的时候，才会发送查询的sql语句:     什么时调用，什么时候发送sql语句查询数据库
+     */
+    @Test
+    public void testReference(){
+        //根据工具类获取实体管理器entityManager
+        EntityManager em = JpaUtils.getEntityManager();
+        //开启事务
+        EntityTransaction transaction = em.getTransaction();
+        transaction.begin();
+        //完成业务操作
+        Customer customer = em.getReference(Customer.class, 1L);
         System.out.println(customer);
         //提交事务
         transaction.commit();
