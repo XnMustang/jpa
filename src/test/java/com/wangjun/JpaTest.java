@@ -198,4 +198,54 @@ public class JpaTest {
         em.close();
     }
 
+    /**
+     * 分页查询
+     * sql:select * from customer limit ?,?;
+     * jpql:from Customer
+     */
+    @Test
+    public void testPage(){
+        //根据工具类获取实体管理器entityManager
+        EntityManager em = JpaUtils.getEntityManager();
+        //开启事务
+        EntityTransaction transaction = em.getTransaction();
+        transaction.begin();
+        //完成业务操作
+        String jpql = "from Customer";
+        Query query = em.createQuery(jpql);     //创建query查询对象，Query对象才是执行jpql的对象
+        //对参数赋值  分页参数
+        query.setFirstResult(0);    //起始索引
+        query.setMaxResults(2);     //每页条数
+        //发送查询 并封装结果集
+        List list = query.getResultList();
+        for (Object o : list) {
+            System.out.println(o);
+        }
+        transaction.commit();
+        em.close();
+    }
+
+    /**
+     * 条件查询
+     * sql:select * from customer where cust_name like ?
+     * jpql:from Customer where custName like ?
+     */
+    @Test
+    public void testCondition(){
+        EntityManager entityManager = JpaUtils.getEntityManager();
+        EntityTransaction tx = entityManager.getTransaction();
+        tx.begin();
+        String jpql = "from Customer where custName like ? ";
+        Query query = entityManager.createQuery(jpql);
+        //对参数赋值 占位符参数
+        //param1：占位符索引位置 param2：取值
+        query.setParameter(1,"王%");
+        List list = query.getResultList();
+        for (Object o : list) {
+            System.out.println(o);
+        }
+        tx.commit();
+        entityManager.close();
+    }
+
 }
