@@ -47,4 +47,23 @@ public class JpaTest {
 //        factory.close();
     }
 
+    /**
+     * 根据id查询客户 find
+     */
+    @Test
+    public void testFind(){
+        //根据工具类获取实体管理器entityManager
+        EntityManager em = JpaUtils.getEntityManager();
+        //开启事务
+        EntityTransaction transaction = em.getTransaction();
+        transaction.begin();
+        //完成业务操作
+        Customer customer = em.find(Customer.class, 1L);
+        System.out.println(customer);
+        //提交事务
+        transaction.commit();
+        //释放资源
+        em.close();
+    }
+
 }
