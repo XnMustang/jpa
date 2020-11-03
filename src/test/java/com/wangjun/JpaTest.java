@@ -4,10 +4,8 @@ import com.wangjun.entity.Customer;
 import com.wangjun.utils.JpaUtils;
 import org.junit.Test;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityTransaction;
-import javax.persistence.Persistence;
+import javax.persistence.*;
+import java.util.List;
 
 /**
  * @Description:
@@ -87,6 +85,116 @@ public class JpaTest {
         //提交事务
         transaction.commit();
         //释放资源
+        em.close();
+    }
+
+    /**
+     * 删除用户
+     */
+    @Test
+    public void testRemove(){
+        //根据工具类获取实体管理器entityManager
+        EntityManager em = JpaUtils.getEntityManager();
+        //开启事务
+        EntityTransaction transaction = em.getTransaction();
+        transaction.begin();
+        //完成业务操作  先查询 后传入对象
+        Customer customer = em.getReference(Customer.class, 1L);
+        em.remove(customer);
+        //提交事务
+        transaction.commit();
+        //释放资源
+        em.close();
+    }
+
+    /**
+     * 更新用户信息
+     */
+    @Test
+    public void testUpdate(){
+        //根据工具类获取实体管理器entityManager
+        EntityManager em = JpaUtils.getEntityManager();
+        //开启事务
+        EntityTransaction transaction = em.getTransaction();
+        transaction.begin();
+        //完成业务操作  先查询 后传入对象
+        Customer customer = em.getReference(Customer.class, 2L);
+        customer.setCustAddress("上海");
+        customer.setCustIndustry("IT");
+        em.persist(customer);
+        //提交事务
+        transaction.commit();
+        //释放资源
+        em.close();
+    }
+
+    /**
+     * 查询全部
+     * sql: select * from customer
+     * jpql:from Customer
+     */
+    @Test
+    public void testFindAll(){
+        //根据工具类获取实体管理器entityManager
+        EntityManager em = JpaUtils.getEntityManager();
+        //开启事务
+        EntityTransaction transaction = em.getTransaction();
+        transaction.begin();
+        //完成业务操作
+        String jpql = "from Customer";
+        Query query = em.createQuery(jpql);     //创建query查询对象，Query对象才是执行jpql的对象
+        //发送查询 并封装结果集
+        List resultList = query.getResultList();
+        for (Object customer : resultList) {
+            System.out.println(customer);
+        }
+        transaction.commit();
+        em.close();
+    }
+
+    /**
+     * 根据id倒叙查询所有用户
+     * sql:select * from customer order by cust_id desc;
+     * jpql:from Customer order by custId desc
+     */
+    @Test
+    public void testOrders(){
+        //根据工具类获取实体管理器entityManager
+        EntityManager em = JpaUtils.getEntityManager();
+        //开启事务
+        EntityTransaction transaction = em.getTransaction();
+        transaction.begin();
+        //完成业务操作
+        String jpql = "from Customer order by custId desc ";
+        Query query = em.createQuery(jpql);     //创建query查询对象，Query对象才是执行jpql的对象
+        //发送查询 并封装结果集
+        List resultList = query.getResultList();
+        for (Object customer : resultList) {
+            System.out.println(customer);
+        }
+        transaction.commit();
+        em.close();
+    }
+
+    /**
+     * 统计函数,统计总数
+     * sql:select count(cust_id) from customer
+     * jpql:select count(cust_id) from customer
+     */
+    @Test
+    public void testCount(){
+        //根据工具类获取实体管理器entityManager
+        EntityManager em = JpaUtils.getEntityManager();
+        //开启事务
+        EntityTransaction transaction = em.getTransaction();
+        transaction.begin();
+        //完成业务操作
+        String jpql = "select count(custId) from Customer";
+        Query query = em.createQuery(jpql);     //创建query查询对象，Query对象才是执行jpql的对象
+        //发送查询 并封装结果集，得到唯一的结果集
+        Object result = query.getSingleResult();
+        System.out.println(result);
+        transaction.commit();
         em.close();
     }
 
